@@ -35,7 +35,10 @@
                 <div class="col text-center">
                     <p id="primary-document">
                         <!-- Add in a javascript onClick -->
-                        <a class="btn btn-primary launchtool" href="/tools/jupyter/invoke/1">Launch Tool</a>
+                        <button class="btn btn-primary launchtool"
+                            onclick="storeDownloadCount(this, 'jupyter', '/tools/jupyter/invoke/1')">
+                            Launch Tool
+                        </button>
                     </p>
                     <a href="https://github.com/hubzero/hubzero-cms/graphs/contributors" target="_blank">
                         Github insights
@@ -44,9 +47,51 @@
             </div>
     </section>
 
-
+    <script>
+        function storeDownloadCount(element, tool, link) {
+            console.log(tool, link)
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- https://stackoverflow.com/questions/15415076/sql-js-in-javascript -->
+    <script src='dist/sql.js'></script>
+    <script>
+        //Create the database
+        const db = new SQL.Database();
+
+        const tableName = "githubStats"
+        const dropExistingTableSql = `DROP TABLE IF EXISTS ${tableName}`
+        const createTableSql = `CREATE TABLE ${tableName} (id integer, download_date date, tool_name text, tool_link text)`
+
+        // Drop existing table, refresh
+        db.run(dropExistingTableSql);
+
+        // Creating the table
+        db.run(createTableSql);
+
+        // Insert two rows of test data
+        db.run("INSERT INTO githubStats VALUES (?,?,?,?), (?,?,?,?)",
+            [
+                1, '1990-12-17', 'jupiter', 'jupiter.html',
+                2, '1990-12-18', 'jupiter2', 'jupiter2.html'
+            ]
+        );
+
+        // Prepare a statement - https://sql.js.org/documentation/Statement.html
+        const stmt = db.prepare("SELECT * FROM githubStats WHERE id BETWEEN $start AND $end");
+        stmt.getAsObject({ $start: 1, $end: 1 }); // {col1:1, col2:111}
+        console.log(stmt.getAsObject({ $start: 1, $end: 1 }));
+
+        // Bind new values
+        stmt.bind({ $start: 1, $end: 2 });
+        while (stmt.step()) { //
+            const row = stmt.getAsObject();
+            console.log('Here is a row: ' + JSON.stringify(row));
+        }
+
+    </script>
 </body>
 
 </html>
