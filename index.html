@@ -48,9 +48,7 @@
     </section>
 
     <script>
-        function storeDownloadCount(element, tool, link) {
-            console.log(tool, link)
-        }
+
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -61,9 +59,17 @@
         //Create the database
         const db = new SQL.Database();
 
+        // Localized to specific scope
+        let dbindex = 1;
+
         const tableName = "githubStats"
         const dropExistingTableSql = `DROP TABLE IF EXISTS ${tableName}`
-        const createTableSql = `CREATE TABLE ${tableName} (id integer, download_date date, tool_name text, tool_link text)`
+        const createTableSql = `CREATE TABLE ${tableName} (
+            id integer, 
+            download_date date, 
+            tool_name text, 
+            tool_link text
+        )`
 
         // Drop existing table, refresh
         db.run(dropExistingTableSql);
@@ -72,23 +78,39 @@
         db.run(createTableSql);
 
         // Insert two rows of test data
-        db.run("INSERT INTO githubStats VALUES (?,?,?,?), (?,?,?,?)",
+        db.run("INSERT INTO githubStats VALUES (?,?,?,?)",
             [
-                1, '2022-10-27', 'testtool1', 'www.espn.com',
-                2, '2022-10-28', 'testtool2', 'www.espn.com'
+                dbindex, '2022-10-27', `testtool_${dbindex}`, 'www.espn.com',
+            ]
+        );
+
+        // Increment db index
+        dbindex = dbindex + 1;
+        db.run("INSERT INTO githubStats VALUES (?,?,?,?)",
+            [
+                dbindex, '2022-10-27', `testtool_${dbindex}`, 'www.espn.com',
             ]
         );
 
         // Prepare a statement - https://sql.js.org/documentation/Statement.html
         const stmt = db.prepare("SELECT * FROM githubStats WHERE id BETWEEN $start AND $end");
-        stmt.getAsObject({ $start: 1, $end: 1 }); // {col1:1, col2:111}
-        console.log(stmt.getAsObject({ $start: 1, $end: 1 }));
+        printOutSqlRows(1, 2);
 
-        // Bind new values
-        stmt.bind({ $start: 1, $end: 2 });
-        while (stmt.step()) { //
-            const row = stmt.getAsObject();
-            console.log('Here is a row: ' + JSON.stringify(row));
+        // Printing out the SQL rows
+        function printOutSqlRows(startId, endId) {
+            // Bind new values
+            stmt.bind({ $start: startId, $end: endId });
+
+            while (stmt.step()) {
+                const row = stmt.getAsObject();
+                console.log('Here is a row: ' + JSON.stringify(row));
+            }
+        }
+
+        // Store a new SQL row
+        function storeDownloadCount(element, tool, link) {
+            dbindex = dbindex + 1;
+            console.log(dbindex, tool, link)
         }
 
     </script>
