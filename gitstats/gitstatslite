@@ -158,6 +158,7 @@ def getnumoflinesinblob(ext_blob):
     Get number of lines in blob
     """
     ext, blob_id = ext_blob
+    print('xxxxxxxxxxxxx getnumoflinesinblob xxxxxxxx', ext, blob_id, ext_blob)
     return (ext, blob_id, int(getpipeoutput(['git cat-file blob %s' % blob_id, 'wc -l']).split()[0]))
 
 
@@ -526,6 +527,8 @@ class GitDataCollector(DataCollector):
         # extensions and size of files
         lines = getpipeoutput(['git ls-tree -r -l -z %s' %
                               getcommitrange('HEAD', end_only=True)]).split(b'\000')
+        print('---lines---', lines)
+
         blobs_to_read = []
         for line in lines:
             if len(line) == 0:
@@ -558,10 +561,19 @@ class GitDataCollector(DataCollector):
             self.extensions[ext]['files'] += 1
             # if cache empty then add ext and blob id to list of new blob's
             # otherwise try to read needed info from cache
+            # print("xxxxx self.cache.keys() xxxxxx", self.cache.keys(), "----- self.cache['lines_in_blob'].keys() ------",
+            #       self.cache['lines_in_blob'].keys())
+
             if 'lines_in_blob' not in self.cache.keys():
                 blobs_to_read.append((ext, blob_id))
                 continue
             if blob_id in self.cache['lines_in_blob'].keys():
+
+                # print("----- self.cache['lines_in_blob'].keys() ------", blob_id,
+                #       self.cache['lines_in_blob'][blob_id])
+                # print(
+                #     "----- self.cache['lines_in_blob'] ------", self.cache['lines_in_blob'])
+
                 self.extensions[ext]['lines'] += self.cache['lines_in_blob'][blob_id]
             else:
                 blobs_to_read.append((ext, blob_id))
@@ -573,7 +585,11 @@ class GitDataCollector(DataCollector):
         pool.join()
 
         # Update cache and write down info about number of number of lines
+        print("xxxxxxxxxxx")
+
         for (ext, blob_id, linecount) in ext_blob_linecount:
+            print("--- ext, blob_id, linecount --", ext, blob_id, linecount)
+
             if 'lines_in_blob' not in self.cache:
                 self.cache['lines_in_blob'] = {}
             self.cache['lines_in_blob'][blob_id] = linecount
