@@ -25,6 +25,15 @@ Requirements
 - a git repository (bare clone will work as well)
 
 
-Learning
+Newbie Python Concepts
 ============
 * Integrating `make` with project to automate the installation of dependencies and running the app. A `Makefile` needs to be at the roo of the project, this file instructs `make` on what to do, consisting of a set of rules - 3 parts with a target, prereq and a recipe. 
+* `sys` - system specific parameters, can attain version info
+* `os` - operating system interfaces, can attain environment info
+* `platform` - provides system information, check whether program is compatible with python version
+* `time` - timestamp is in milliseconds since the epoch
+
+
+Generated Output
+============
+This is a [sample](https://github.com/irbull/gitscripts/blob/master/yearly_stats) of the data and the GNU plots that will be generated. 

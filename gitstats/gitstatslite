@@ -19,16 +19,11 @@ import sys
 import time
 import zlib
 
-# https://github.com/irbull/gitscripts/blob/master/yearly_stats
-
 if sys.version_info < (2, 6):
     print >> sys.stderr, "Python 2.6 or higher is required for gitstats"
     sys.exit(1)
 
 os.environ['LC_ALL'] = 'C'
-
-# print(sys.version_info)
-# print(os.environ)
 
 GNUPLOT_COMMON = 'set terminal png transparent size 640,240\nset size 1.0,1.0\n'
 ON_LINUX = (platform.system() == 'Linux')
@@ -37,9 +32,6 @@ WEEKDAYS = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
 exectime_internal = 0.0
 exectime_external = 0.0
 time_start = time.time()
-
-# timestamp in seconds since the epoch
-# print(time_start)
 
 # By default, gnuplot is searched from path, but can be overridden with the
 # environment variable "GNUPLOT"
