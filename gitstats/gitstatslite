@@ -39,7 +39,7 @@ gnuplot_cmd = 'gnuplot'
 if 'GNUPLOT' in os.environ:
     gnuplot_cmd = os.environ['GNUPLOT']
 
-# Static configuration hashmap, values will be used
+# Static configuration hashmap, location of css file
 conf = {
     'max_domains': 10,
     'max_ext_length': 10,
@@ -542,14 +542,19 @@ class GitDataCollector(DataCollector):
             self.total_files += 1
 
             filename = fullpath.split(b'/')[-1]  # strip directories
+
             if filename.find(b'.') == -1 or filename.rfind(b'.') == 0:
                 ext = ''
             else:
-                ext = filename[(filename.rfind(b'.') + 1):]
+                # Decode byte object to produce a string. Previously, extension included b'txt'
+                # https://stackoverflow.com/questions/606191/convert-bytes-to-a-string
+                ext = filename[(filename.rfind(b'.') + 1):].decode("utf-8")
+
             if len(ext) > conf['max_ext_length']:
                 ext = ''
             if ext not in self.extensions:
                 self.extensions[ext] = {'files': 0, 'lines': 0}
+
             self.extensions[ext]['files'] += 1
             # if cache empty then add ext and blob id to list of new blob's
             # otherwise try to read needed info from cache
@@ -1218,20 +1223,16 @@ class HTMLReportCreator(ReportCreator):
         extkeys = [str(i) for i in data.extensions.keys()]
         sortedKeys = sorted(extkeys)
 
-        # for ext in sortedKeys:
-        #     print('----- loop ext -----', ext)
-        #     extKey = ext.replace('"', '')
-        #     print('----- loop get extKey -----', data.extensions[extKey])
+        for ext in sortedKeys:
+            files = data.extensions[ext]['files']
+            lines = data.extensions[ext]['lines']
 
-        #     files = data.extensions.get(ext)['files']
-        #     lines = data.extensions.get(ext)['lines']
-
-        #     try:
-        #         loc_percentage = (100.0 * lines) / data.getTotalLOC()
-        #     except ZeroDivisionError:
-        #         loc_percentage = 0
-        #     f.write('<tr><td>%s</td><td>%d (%.2f%%)</td><td>%d (%.2f%%)</td><td>%d</td></tr>' %
-        #             (ext, files, (100.0 * files) / data.getTotalFiles(), lines, loc_percentage, lines / files))
+            try:
+                loc_percentage = (100.0 * lines) / data.getTotalLOC()
+            except ZeroDivisionError:
+                loc_percentage = 0
+            f.write('<tr><td>%s</td><td>%d (%.2f%%)</td><td>%d (%.2f%%)</td><td>%d</td></tr>' %
+                    (ext, files, (100.0 * files) / data.getTotalFiles(), lines, loc_percentage, lines / files))
 
         f.write('</table>')
 

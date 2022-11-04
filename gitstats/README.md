@@ -33,6 +33,9 @@ Newbie Python Concepts
 * `platform` - provides system information, check whether program is compatible with python version
 * `time` - timestamp is in milliseconds since the epoch
 
+Python Issues
+============
+* [bytes to string](https://stackoverflow.com/questions/606191/convert-bytes-to-a-string)
 
 Generated Output
 ============
