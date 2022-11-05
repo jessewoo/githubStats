@@ -56,7 +56,7 @@ conf = {
 
 
 def getpipeoutput(cmds, quiet=False):
-    # print(cmds)
+    print('--- getpipeoutput --', cmds)
 
     global exectime_external
     start = time.time()
@@ -109,6 +109,7 @@ def getkeyssortedbyvalues(dict):
 
 
 def getkeyssortedbyvaluekey(d, key):
+    print('-- getkeyssortedbyvaluekey ---', d, key)
     return map(lambda el: el[1], sorted(map(lambda el: (d[el][key], el), d.keys())))
 
 
@@ -158,7 +159,6 @@ def getnumoflinesinblob(ext_blob):
     Get number of lines in blob
     """
     ext, blob_id = ext_blob
-    print('xxxxxxxxxxxxx getnumoflinesinblob xxxxxxxx', ext, blob_id, ext_blob)
     return (ext, blob_id, int(getpipeoutput(['git cat-file blob %s' % blob_id, 'wc -l']).split()[0]))
 
 
@@ -323,6 +323,7 @@ class GitDataCollector(DataCollector):
 
         # tags
         lines = getpipeoutput(['git show-ref --tags']).split(b'\n')
+
         for line in lines:
             if len(line) == 0:
                 continue
@@ -364,20 +365,24 @@ class GitDataCollector(DataCollector):
         # Outputs "<stamp> <date> <time> <timezone> <author> '<' <mail> '>'"
         lines = getpipeoutput(['git rev-list --pretty=format:"%%at %%ai %%aN <%%aE>" %s' %
                               getlogrange('HEAD'), 'grep -v ^commit']).split(b'\n')
+
+        # Each element in the list is in byte, need to convert each element to string
+        print('--- lines rev-list ----', lines,
+              '--- type of lines --', type(lines))
         for line in lines:
-            parts = line.split(b' ', 4)
+            parts = line.decode("utf-8").split(' ', 4)
             author = ''
             try:
                 stamp = int(parts[0])
             except ValueError:
                 stamp = 0
             timezone = parts[3]
-            author, mail = parts[4].split(b'<', 1)
+            author, mail = parts[4].split('<', 1)
             author = author.rstrip()
-            mail = mail.rstrip(b'>')
+            mail = mail.rstrip('>')
             domain = '?'
-            if mail.find(b'@') != -1:
-                domain = mail.rsplit(b'@', 1)[1]
+            if mail.find('@') != -1:
+                domain = mail.rsplit('@', 1)[1]
             date = datetime.datetime.fromtimestamp(float(stamp))
 
             # First and last commit stamp (may be in any order because of cherry-picking and patches)
@@ -724,6 +729,9 @@ class GitDataCollector(DataCollector):
     def refine(self):
         # authors
         # name -> {place_by_commits, commits_frac, date_first, date_last, timedelta}
+
+        print('--- refine --', self.authors)
+
         self.authors_by_commits = list(getkeyssortedbyvaluekey(
             self.authors, 'commits'))
         self.authors_by_commits.reverse()  # most first
