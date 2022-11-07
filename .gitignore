@@ -1,4 +1,4 @@
 # Ignore all the data files
 /map/data/
 
-test.db
+*.db
