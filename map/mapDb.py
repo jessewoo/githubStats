@@ -1,13 +1,21 @@
 import sqlite3
 import re
 import pandas as pd
-from shapely.geometry import Point
-import geopandas as gpd
-from geopandas import GeoDataFrame
+import plotly.express as px
 
 
 def main():
-    mapdata()
+    mapCountryData()
+    # mapdata()
+
+
+def mapCountryData():
+    df = pd.read_csv("csv/countries.csv")
+
+    fig = px.scatter_geo(df, lat='latitude',
+                         lon='longitude', hover_name="name")
+    fig.update_layout(title='World map', title_x=0.5)
+    fig.show()
 
 
 def mapdata():
@@ -22,6 +30,7 @@ def mapdata():
     # Strip out coordinate from dataset
 
     # https://stackoverflow.com/questions/53233228/plot-latitude-longitude-from-csv-in-python-3-6
+    # https://stackoverflow.com/questions/1565555/plot-geoip-data-on-a-world-map
 
 
 # Call main
