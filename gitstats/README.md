@@ -40,3 +40,7 @@ Python Issues
 Generated Output
 ============
 This is a [sample](https://github.com/irbull/gitscripts/blob/master/yearly_stats) of the data and the GNU plots that will be generated. 
+
+Running
+=============
+```./gitstatslite /Users/${user_pwd}/jessewoo.github.io/ ~/Documents/${user_pwd}/stats/jessewoo```
