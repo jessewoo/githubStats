@@ -1,17 +1,19 @@
 import sqlite3
-import re
 
 
 def main():
     dbinit()
     dbtestdata()
-    #analyzeLog('./access_log', '/cig/software')
 
 
 def dbtestdata():
     dbconn = sqlite3.connect("tracking.db", timeout=60)
 
     # Insert test statements with random IP addresses
+    # TODO: when do we extract longitude and latitude from IP address?
+    # TODO: Extracting coordinates, is it another method that gets run with the cron job. any empty cells will run method.
+
+    # This is really test data, will coordinates already populated. Initially those cells would be blank when recorded, only have dates and ip address
     test_insert_statement = "INSERT INTO tool_download_count \
         (tool_name, date_download, ip_address, ip_lat, ip_long, source) \
         VALUES \
@@ -25,7 +27,9 @@ def dbtestdata():
             ('axisem', '2022-11-03', '202.68.114.196', '32.8761', '-117.2318', 'https://geodynamics.org/resources/1772/download/axisem-manual-1.3.pdf'), \
             ('calypso', '2022-10-15', '235.233.82.76', '32.733975', '-117.144544', 'https://github.com/geodynamics/calypso/releases/tag/V1.2.0-p2'), \
             ('calypso', '2022-11-04', '99.55.113.25', '32.8761', '-117.2318', 'https://geodynamics.org/resources/1575/download/calypso-1.2.0.tar.gz'), \
-            ('calypso', '2022-11-01', '146.227.150.186', '32.8761', '-117.2318', 'https://geodynamics.org/resources/1576/download/calypso-manual-1.2.pdf') \
+            ('calypso', '2022-11-01', '146.227.150.186', '32.8761', '-117.2318', 'https://geodynamics.org/resources/1576/download/calypso-manual-1.2.pdf'), \
+            ('aagaard_pylith', '2022-11-05', '146.227.150.186', '32.8761', '-117.2318', '/cig/community/workinggroups/seismo/workshops/spice07/presentations/aagaard_pylith.pdf/at_download/file'), \
+            ('cig_science_gateways', '2022-11-01', '146.227.150.186', '32.8761', '-117.2318', 'http://geodynamics.org/resources/543/') \
         "
 
     dbconn.execute(test_insert_statement)
@@ -62,6 +66,7 @@ def dbinit():
         cursor.execute(createTable)
 
     print("Table created successfully")
+    dbconn.close()
 
 
 # Call main
