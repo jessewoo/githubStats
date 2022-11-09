@@ -66,6 +66,8 @@ def updateDatabaseWithCoordinates(ipMap):
 
 
 def mapCountryData():
+    # Testing panda scatter geo plot with csv import
+
     df = pd.read_csv("csv/countries.csv")
 
     fig = px.scatter_geo(df, lat='latitude',
