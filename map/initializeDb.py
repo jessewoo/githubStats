@@ -55,13 +55,14 @@ def dbinit():
     else:
         print('Table tool_download_count does not exist, creating it')
         createTable = '''CREATE TABLE tool_download_count
-            (count_id          INTEGER PRIMARY KEY     AUTOINCREMENT,
-            tool_name          TEXT                NOT NULL,
-            date_download      DATE                NOT NULL,
-            ip_address         VARCHAR(32)         NOT NULL,
-            ip_lat             FLOAT               NOT NULL,
-            ip_long            FLOAT               NOT NULL,
-            source             TEXT                NOT NULL );
+            ("count_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+            "tool_name" TEXT NOT NULL,
+            "date_download" DATE NOT NULL,
+            "ip_address" VARCHAR(32) NOT NULL,
+            "ip_lat" FLOAT NOT NULL,
+            "ip_long" FLOAT NOT NULL,
+            "source" TEXT NOT NULL,
+            "coord_updated" BOOLEAN NOT NULL DEFAULT 0);
         '''
         cursor.execute(createTable)
 
