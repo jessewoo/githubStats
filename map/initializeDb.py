@@ -38,8 +38,8 @@ def dbtestdata(numberOfIp):
         arrLink = list(software[randSelectedSoftware])
         randSelectedSoftwareLink = random.choice(arrLink)
 
-        cursor.execute("INSERT INTO tool_download_count (tool_name, date_download, ip_address, ip_lat, ip_long, source) \
-                VALUES (?, ?, ?, ?, ?, ?)", (randSelectedSoftware, randDate, randIpAdd, i, i, randSelectedSoftwareLink) \
+        cursor.execute("INSERT INTO tool_download_count (tool_name, date_download, ip_address, ip_lat, ip_long, country, region, city, zip, source) \
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (randSelectedSoftware, randDate, randIpAdd, i, i, i, i, i, i, randSelectedSoftwareLink) \
                 )
 
     dbconn.commit()
@@ -70,6 +70,10 @@ def dbinit():
             "ip_address" VARCHAR(32) NOT NULL,
             "ip_lat" FLOAT NOT NULL,
             "ip_long" FLOAT NOT NULL,
+            "country" VARCHAR(32) NOT NULL,
+            "region" VARCHAR(32) NOT NULL,
+            "city" VARCHAR(32) NOT NULL,
+            "zip" VARCHAR(32) NOT NULL,
             "source" TEXT NOT NULL,
             "coord_updated" BOOLEAN NOT NULL DEFAULT 0);
         '''

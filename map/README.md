@@ -18,3 +18,6 @@ Will produce a static map
 
 #### Generate Random Ip addresses
 * [random-ip](https://gist.github.com/PSJoshi/0a9d290ed52c759480eb5abccdf755fd)
+
+#### Save Plotly file
+* [kaleido](https://stackoverflow.com/questions/59815797/how-to-save-plotly-express-plot-into-a-html-or-static-image-file)

@@ -1,5 +1,7 @@
 # Ignore all the data files
 /map/data/
 /map/otherCode/
+/map/images/
+/map/html/
 
 *.db

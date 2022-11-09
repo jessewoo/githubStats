@@ -4,13 +4,14 @@ import pandas as pd
 import plotly.express as px
 import requests
 
-
 def main():
     # mapCountryData()
+    # Should create mkdir method
 
     ipList = retrieveAllIpAddress()
     ipHashMap = mapIpToCoordinates(ipList)
     updateDatabaseWithCoordinates(ipHashMap)
+    mapCountryDataWithDb()
 
 
 def retrieveAllIpAddress():
@@ -54,15 +55,41 @@ def updateDatabaseWithCoordinates(ipMap):
         ipx = key
         lat = ""
         lon = ""
+        country = ""
+        regionName = ""
+        city = ""
+        zip = ""
 
         if ipMap[key]['status'] == "success":
             lat = ipMap[ipx]['lat']
             lon = ipMap[ipx]['lon']
+            country = ipMap[ipx]['country']
+            regionName = ipMap[ipx]['regionName']
+            city = ipMap[ipx]['city']
+            zip = ipMap[ipx]['zip']
 
         cursor.execute(
-            '''UPDATE tool_download_count SET ip_lat=?, ip_long=?, coord_updated=? WHERE ip_address=? AND coord_updated IS FALSE''', (lat, lon, 1, ipx))
+            '''UPDATE tool_download_count SET ip_lat=?, ip_long=?, country=?, region=?, city=?, zip=?, coord_updated=?  \
+                 WHERE ip_address=? AND coord_updated IS FALSE''', (lat, lon, country, regionName, city, zip, 1, ipx))
 
     dbconn.commit()
+
+def mapCountryDataWithDb():
+    # Testing panda scatter geo plot with select db import
+    dbconn = sqlite3.connect("tracking.db", timeout=60)
+
+    df = pd.read_sql_query("SELECT * FROM tool_download_count WHERE coord_updated IS TRUE", dbconn)
+
+    fig = px.scatter_geo(df, lat='ip_lat',
+                         lon='ip_long', hover_name="city")
+    fig.update_layout(title='World map', title_x=0.5)
+    fig.show()
+
+    # Using kaleido - export in PNG
+    fig.write_image("map/images/output.png")
+
+    # Export in HTML
+    fig.write_html("map/html/output.html")
 
 
 def mapCountryData():
