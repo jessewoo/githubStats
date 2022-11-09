@@ -15,3 +15,6 @@ Will produce a static map
 #### Mapping Longitude and Latitude to World Map
 * [plot from cvs](https://stackoverflow.com/questions/53233228/plot-latitude-longitude-from-csv-in-python-3-6)
 * [world map](https://stackoverflow.com/questions/1565555/plot-geoip-data-on-a-world-map)
+
+#### Generate Random Ip addresses
+* [random-ip](https://gist.github.com/PSJoshi/0a9d290ed52c759480eb5abccdf755fd)

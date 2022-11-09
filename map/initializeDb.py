@@ -9,6 +9,8 @@ def main():
 def dbtestdata():
     dbconn = sqlite3.connect("tracking.db", timeout=60)
 
+    # RANDOMIZE THE IP ADDRESS
+
     # Insert test statements with random IP addresses
     # TODO: when do we extract longitude and latitude from IP address?
     # TODO: Extracting coordinates, is it another method that gets run with the cron job. any empty cells will run method.
