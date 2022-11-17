@@ -3,6 +3,7 @@
 /map/otherCode/
 /map/images/
 /map/html/
+/map/json/
 
 # from sqlite - database file to store data
 *.db

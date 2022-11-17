@@ -9,13 +9,18 @@ def main():
     # Should create mkdir method
 
     ipList = retrieveAllIpAddress()
-    ipHashMap = mapIpToCoordinates(ipList)
-    updateDatabaseWithCoordinates(ipHashMap)
-    mapCountryDataWithDb()
 
+    if (len(ipList) > 0): 
+        ipHashMap = mapIpToCoordinates(ipList)
+        updateDatabaseWithCoordinates(ipHashMap)
+    else:
+        print("no ip addresses needed to retrieve coordinates")
+    
+    mapCountryDataWithDb()
+    groupDataByMonths()
 
 def retrieveAllIpAddress():
-    print("retrieve ip addresses from table")
+    print("retrieving ip addresses from table")
 
     dbconn = sqlite3.connect("tracking.db", timeout=60)
     cursor = dbconn.cursor()
@@ -33,14 +38,23 @@ def mapIpToCoordinates(listofIp):
 
     url = 'http://ip-api.com/batch'
     postObj = listofIp
+    # print(listofIp)
 
     response = requests.post(url, json=postObj)
-    responseJson = response.json()
-
     ipToMetaMap = {}
-    for obj in responseJson:
-        ip = obj['query']
-        ipToMetaMap[ip] = obj
+    if response: 
+        responseJson = response.json()
+        if responseJson:
+            for obj in responseJson:
+                ip = obj['query']
+                ipToMetaMap[ip] = obj
+        else:
+            print('status raise', response.raise_for_status())
+
+    else: 
+        print('status code', response.status_code)
+
+    # print(ipToMetaMap)
 
     return ipToMetaMap
 
@@ -81,8 +95,11 @@ def mapCountryDataWithDb():
     df = pd.read_sql_query("SELECT * FROM tool_download_count WHERE coord_updated IS TRUE", dbconn)
 
     fig = px.scatter_geo(df, lat='ip_lat',
-                         lon='ip_long', hover_name="city")
-    fig.update_layout(title='World map', title_x=0.5)
+                         lon='ip_long', hover_name="city",
+                         width=800, height=400)
+
+    fig.update_layout(plot_bgcolor="rgba(0, 0, 0, 0)", paper_bgcolor="rgba(0, 0, 0, 0)", margin=dict(l=0, r=0, t=0, b=0))
+
     fig.show()
 
     # Using kaleido - export in PNG
@@ -91,6 +108,16 @@ def mapCountryDataWithDb():
     # Export in HTML
     fig.write_html("map/html/output.html")
 
+def groupDataByMonths():
+    dbconn = sqlite3.connect("tracking.db", timeout=60)
+
+    df = pd.read_sql_query("SELECT * FROM tool_download_count WHERE coord_updated IS TRUE", dbconn)
+
+    df['Year'] = pd.to_datetime(df['date_download']).dt.year
+    df['Month'] = pd.to_datetime(df['date_download']).dt.month
+
+    g = df.groupby([('Year'), ('Month')]).sum().to_json(r"map/json/map_months.json")
+    # print(g)
 
 def mapCountryData():
     # Testing panda scatter geo plot with csv import

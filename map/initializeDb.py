@@ -4,7 +4,7 @@ from faker import Faker
 
 def main():
     dbinit()
-    dbtestdata(10)
+    dbtestdata(75)
 
 # Hashmap of software with name and links
 software = {}
@@ -32,7 +32,7 @@ def dbtestdata(numberOfIp):
     for i in range(0, numberOfIp):
         softwareKeys = list(software.keys())
         randSelectedSoftware = random.choice(softwareKeys)
-        randDate = faker.date_between(start_date='-30d')
+        randDate = faker.date_between(start_date='-1y')
         randIpAdd = faker.ipv4()
 
         arrLink = list(software[randSelectedSoftware])
