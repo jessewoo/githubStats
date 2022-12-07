@@ -7,7 +7,6 @@ import requests
 def main():
     # mapCountryData()
     # Should create mkdir method
-
     ipList = retrieveAllIpAddress()
 
     if (len(ipList) > 0): 
@@ -32,16 +31,16 @@ def retrieveAllIpAddress():
 
     return ipList
 
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
 
-def mapIpToCoordinates(listofIp):
-    print("batch conversion of Ip address")
 
+def requestIpApi(listofIp, ipToMetaMap):
     url = 'http://ip-api.com/batch'
-    postObj = listofIp
-    # print(listofIp)
 
-    response = requests.post(url, json=postObj)
-    ipToMetaMap = {}
+    response = requests.post(url, json=listofIp)
     if response: 
         responseJson = response.json()
         if responseJson:
@@ -50,11 +49,21 @@ def mapIpToCoordinates(listofIp):
                 ipToMetaMap[ip] = obj
         else:
             print('status raise', response.raise_for_status())
-
     else: 
         print('status code', response.status_code)
 
-    # print(ipToMetaMap)
+    return ipToMetaMap
+
+# 100 IP address MAX
+MAX_API_BATCH_SIZE = 50
+
+def mapIpToCoordinates(listofIp):
+    print("batch conversion of Ip address by 100")
+    
+    ipToMetaMap = {}
+    for batch in chunks(listofIp, MAX_API_BATCH_SIZE):
+        batch_done = requestIpApi(batch, ipToMetaMap)
+        ipToMetaMap.update(batch_done)
 
     return ipToMetaMap
 
